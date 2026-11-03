@@ -1,6 +1,11 @@
 package com.markettrack.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "products")
@@ -26,24 +31,63 @@ public class Product {
         this.soldQuantity = soldQuantity;
     }
 
-    // Calculated Fields
+    public Product(Long id, String name, double purchasePrice, double sellingPrice, int initialStock, int soldQuantity) {
+        this.id = id;
+        this.name = name;
+        this.purchasePrice = purchasePrice;
+        this.sellingPrice = sellingPrice;
+        this.initialStock = initialStock;
+        this.soldQuantity = soldQuantity;
+    }
+
+    // ==========================================================
+    // Calculated Business Logic & Controller Alias Methods
+    // ==========================================================
+
+    @Transient
     public int getRemainingStock() {
         return Math.max(0, this.initialStock - this.soldQuantity);
     }
 
+    @Transient
     public double getTotalInventoryValue() {
         return getRemainingStock() * this.purchasePrice;
     }
 
+    @Transient
+    public double getInventoryValue() {
+        return getTotalInventoryValue();
+    }
+
+    @Transient
     public double getTotalSalesRevenue() {
         return this.soldQuantity * this.sellingPrice;
     }
 
+    @Transient
+    public double getSalesRevenue() {
+        return getTotalSalesRevenue();
+    }
+
+    @Transient
     public double getTotalProfit() {
         return (this.sellingPrice - this.purchasePrice) * this.soldQuantity;
     }
 
-    // Getters and Setters
+    @Transient
+    public double getNetProfit() {
+        return getTotalProfit();
+    }
+
+    @Transient
+    public boolean isLowStock() {
+        return getRemainingStock() < 5;
+    }
+
+    // ==========================================================
+    // Standard Getters and Setters
+    // ==========================================================
+
     public Long getId() { 
         return id; 
     }
